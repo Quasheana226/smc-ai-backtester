@@ -1,0 +1,20 @@
+# Data processing and math
+pandas
+numpy
+
+# Calling the public market-data API
+requests
+
+# Candlestick chart with trade markers
+plotly
+
+# Front end
+streamlit
+
+# LLM: prompt templates + connection to the local Ollama model
+langchain-core
+langchain-ollama
+
+# Testing and code quality
+pytest
+ruff

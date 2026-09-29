@@ -1,0 +1,10 @@
+# Tool settings so everyone uses the same rules.
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+# E/F = standard errors, I = sorted imports, B = common bug patterns
+select = ["E", "F", "I", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
