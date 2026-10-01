@@ -18,3 +18,9 @@ SUPPORTED_TIMEFRAMES = ["15m", "1h", "4h", "1d"]
 
 #Downladed candles are saved so we don't have to redownload them every time we run the app
 CACHE_DIR = "data/cache"
+
+#  SWING DETECTION
+
+# A candle must have the highest high (or lowest low) within this many
+# candles on each side to count as a swing point.
+SWING_LOOKBACK = 2
