@@ -1,0 +1,11 @@
+# Virtual environment (rebuilt from uv.lock with `uv sync`)
+.venv/
+
+# Python bytecode and tool caches
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Downloaded candles are re-fetchable; keep the folder, not the files
+data/cache/*
+!data/cache/.gitkeep
