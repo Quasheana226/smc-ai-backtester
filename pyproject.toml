@@ -1,3 +1,18 @@
+[project]
+name = "smc-backtester"
+version = "0.1.0"
+description = "Backtests Smart Money Concepts setups on crypto candles and summarizes results with a local LLM."
+requires-python = ">=3.14"
+dependencies = [
+    "langchain-core>=1.6.6",
+    "langchain-ollama>=1.1.0",
+    "numpy>=2.5.3",
+    "pandas>=3.0.6",
+    "plotly>=7.1.0",
+    "requests>=2.34.2",
+    "streamlit>=1.64.0",
+]
+
 # Tool settings so everyone uses the same rules.
 [tool.ruff]
 line-length = 110
@@ -8,3 +23,9 @@ select = ["E", "F", "I", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
