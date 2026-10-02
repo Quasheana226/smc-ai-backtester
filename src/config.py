@@ -24,3 +24,8 @@ CACHE_DIR = "data/cache"
 # A candle must have the highest high (or lowest low) within this many
 # candles on each side to count as a swing point.
 SWING_LOOKBACK = 2
+
+#  TRADE SIMULATION RULES
+
+# 0.05% room past the wick, so tiny noise doesn't knock the stop out.
+STOP_BUFFER_PCT = 0.0005
