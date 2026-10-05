@@ -29,3 +29,14 @@ SWING_LOOKBACK = 2
 
 # 0.05% room past the wick, so tiny noise doesn't knock the stop out.
 STOP_BUFFER_PCT = 0.0005
+
+# Take profit at this many times the risk. 2.0 means risk $1 to make $2.
+RR_TARGET = 2.0
+
+# Round-trip trading fee as a fraction (0.001 = 0.1%). Ignoring fees makes
+# every backtest look better than reality.
+FEE_PCT = 0.001
+
+# Trend label for each trade: "up" if price is above its N-candle average.
+# Lets the LLM say things like "the setup worked better in uptrends".
+TREND_SMA_PERIOD = 50
