@@ -1,8 +1,9 @@
 """Test for trade simulation signals in trade out """
 
-import pandas as pd 
+import pandas as pd
 
 from src.backtest.simulate import simulate_trades
+
 
 def _signals(rows, signal_at=0, direction=1, stop=9.0):
     
