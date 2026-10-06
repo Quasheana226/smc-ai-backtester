@@ -44,3 +44,10 @@ TREND_SMA_PERIOD = 50
 # Fewer closed trades than this = results are flagged "low sample" and shouldn't
 # be trusted yet. 30 is a common rule-of-thumb minimum for basic statistics.
 MIN_TRADES_FOR_CONFIDENCE = 30
+
+# Local AI model (run by Ollama) that writes the plain-English summary.
+OLLAMA_MODEL = "llama3.2"
+
+# 0 = always picks the most likely words (consistent, factual).
+# 1 = more random and "creative". Low is right for reporting numbers.
+OLLAMA_TEMPERATURE = 0.2
