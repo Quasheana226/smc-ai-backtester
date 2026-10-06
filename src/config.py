@@ -40,3 +40,7 @@ FEE_PCT = 0.001
 # Trend label for each trade: "up" if price is above its N-candle average.
 # Lets the LLM say things like "the setup worked better in uptrends".
 TREND_SMA_PERIOD = 50
+
+# Fewer closed trades than this = results are flagged "low sample" and shouldn't
+# be trusted yet. 30 is a common rule-of-thumb minimum for basic statistics.
+MIN_TRADES_FOR_CONFIDENCE = 30
