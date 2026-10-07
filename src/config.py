@@ -18,3 +18,36 @@ SUPPORTED_TIMEFRAMES = ["15m", "1h", "4h", "1d"]
 
 #Downladed candles are saved so we don't have to redownload them every time we run the app
 CACHE_DIR = "data/cache"
+
+#  SWING DETECTION
+
+# A candle must have the highest high (or lowest low) within this many
+# candles on each side to count as a swing point.
+SWING_LOOKBACK = 2
+
+#  TRADE SIMULATION RULES
+
+# 0.05% room past the wick, so tiny noise doesn't knock the stop out.
+STOP_BUFFER_PCT = 0.0005
+
+# Take profit at this many times the risk. 2.0 means risk $1 to make $2.
+RR_TARGET = 2.0
+
+# Round-trip trading fee as a fraction (0.001 = 0.1%). Ignoring fees makes
+# every backtest look better than reality.
+FEE_PCT = 0.001
+
+# Trend label for each trade: "up" if price is above its N-candle average.
+# Lets the LLM say things like "the setup worked better in uptrends".
+TREND_SMA_PERIOD = 50
+
+# Fewer closed trades than this = results are flagged "low sample" and shouldn't
+# be trusted yet. 30 is a common rule-of-thumb minimum for basic statistics.
+MIN_TRADES_FOR_CONFIDENCE = 30
+
+# Local AI model (run by Ollama) that writes the plain-English summary.
+OLLAMA_MODEL = "llama3.2"
+
+# 0 = always picks the most likely words (consistent, factual).
+# 1 = more random and "creative". Low is right for reporting numbers.
+OLLAMA_TEMPERATURE = 0.2
