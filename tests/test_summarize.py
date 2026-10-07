@@ -51,7 +51,7 @@ def test_summary_returns_the_model_reply():
     assert text == "Across 4 trades, this setup won half the time."
     
     
-def test_falls_back_when_the_model_is_unavilable():
+def test_falls_back_when_the_model_is_unavailable():
     """IF ollama is off, the app still shows a summary instead of crashing. """
     
     def broken_model(_promt):
@@ -85,3 +85,11 @@ def test_verdict_comes_from_average_r_not_win_rate():
 
     assert inputs["win_rate"] == "36.4%"
     assert inputs["verdict"].startswith("LOST money")
+
+
+def test_large_sample_has_no_warning():
+    """30+ trades: the note must not contain 'WARNING', or a small AI may invent one."""
+    inputs = _inputs([1.99, -1.01] * 20)  # 40 trades
+
+    assert "WARNING" not in inputs["sample_note"]
+    assert "40 closed trades" in inputs["sample_note"]
