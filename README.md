@@ -2,7 +2,7 @@
 
 A Streamlit app that tests two rule-based Smart Money Concepts trading setups on real crypto price history, then has a local AI explain the results in plain English.
 
-<!-- TODO: add docs/images/app-overview.png -->
+![App overview: the settings sidebar and start screen](docs/images/app-overview.png)
 
 ---
 
@@ -57,9 +57,9 @@ The short way to remember it: **a sweep comes back, a BOS stays.**
 - **Full trades table** with a plain-English tooltip on every column header.
 - **Works without the AI.** If Ollama is not running, the app shows a plain summary written by code instead of crashing.
 
+![Explain a trade, with the exact-facts line underneath, followed by the AI summary and breakdowns](docs/images/explain-a-trade.png)
+
 <!-- TODO: add docs/images/chart-and-metrics.png -->
-<!-- TODO: add docs/images/ai-summary.png -->
-<!-- TODO: add docs/images/explain-a-trade.png -->
 <!-- TODO: add docs/images/column-tooltips.png -->
 
 ---
@@ -166,6 +166,10 @@ Small local language models write well but are unreliable at math, and they some
 | The AI decided whether a setup "made money" from the win rate. A win rate above breakeven can still lose money once fees are included. | The code now writes a **verdict** from the average result after fees, and the AI must repeat that verdict instead of judging for itself. A test covers a 36.4% win rate that still loses money. |
 | When explaining a single trade, the AI said a winning trade "stopped out" at its stop price. | A line of **exact facts from code** now appears under every AI explanation, labeled as AI-written, so readers can check it. |
 
+The second mistake, caught in the terminal before the verdict fix: the AI called a 36.3% win rate "higher than the breakeven win rate of 33.3%, indicating that the setup made money", even though the average result was −0.15R per trade.
+
+![Terminal run where the AI wrongly concluded the setup made money from its win rate](docs/images/ai-mistake-win-rate.png)
+
 ### When Ollama is off
 
 If Ollama isn't running or the model isn't downloaded, the AI call fails safely. The app shows a plain summary or trade explanation written entirely by code, starting with "AI unavailable". The rest of the app keeps working. When a backtest finds no closed trades, the AI isn't called at all.
@@ -227,7 +231,12 @@ These come from running the Liquidity Sweep setup on Bitcoin with 1-hour candles
 │   └── cache/
 │       └── .gitkeep            # Keeps the folder; downloaded CSVs are git-ignored
 ├── docs/
-│   └── .gitkeep                # Placeholder for docs and screenshots
+│   ├── .gitkeep
+│   └── images/                 # Screenshots used in this README
+│       ├── ai-mistake-win-rate.png
+│       ├── app-overview.png
+│       ├── explain-a-trade.png
+│       └── running-backtest.png
 ├── pyproject.toml              # Project info, dependencies, Ruff and pytest settings
 ├── requirements.txt            # Plain dependency list for pip users
 ├── scripts/
@@ -299,6 +308,10 @@ uv run streamlit run app.py
 ```
 
 Streamlit opens the app in your browser. Pick your settings in the sidebar, then click **Run backtest**. The first run for a new pair or date range downloads candles from Binance.US, so it needs an internet connection. Later runs use the cache.
+
+A progress box reports each step while the backtest runs:
+
+![Progress box showing the download, simulation, and AI steps](docs/images/running-backtest.png)
 
 ---
 
