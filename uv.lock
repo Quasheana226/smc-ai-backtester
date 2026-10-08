@@ -1034,6 +1034,7 @@ dependencies = [
 dev = [
     { name = "pytest" },
     { name = "ruff" },
+    { name = "watchdog" },
 ]
 
 [package.metadata]
@@ -1051,6 +1052,7 @@ requires-dist = [
 dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.16.10" },
+    { name = "watchdog", specifier = ">=6.0.0" },
 ]
 
 [[package]]
