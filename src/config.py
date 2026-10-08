@@ -16,7 +16,7 @@ REQUEST_PAUSE_SECONDS = 0.2
 # stays a reasonable size.
 SUPPORTED_TIMEFRAMES = ["15m", "1h", "4h", "1d"]
 
-#Downladed candles are saved so we don't have to redownload them every time we run the app
+# Downladed candles are saved so we don't have to redownload them every time we run the app
 CACHE_DIR = "data/cache"
 
 #  SWING DETECTION
