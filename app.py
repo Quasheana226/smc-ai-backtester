@@ -11,8 +11,31 @@ import streamlit as st
 from src import config
 from src.backtest.stats import breakdown
 from src.data.fetch import fetch_candles
+from src.llm.explain_trade import build_trade_inputs, explain_trade
 from src.llm.summarize import build_prompt_inputs, summarize
 from src.pipeline import SETUPS, run_backtest
+
+# Plain-English help for every column in the trades table (shown when you hover
+# over a column header). Written by code, so it's always correct.
+COLUMN_HELP = {
+    "signal_time": "When the setup appeared. The trade enters on the NEXT candle.",
+    "entry_time": "When the trade was entered: the open of the candle after the signal.",
+    "exit_time": "When the trade closed.",
+    "direction": "long = a bet that price goes up. short = a bet that price goes down.",
+    "entry": "The price the trade was entered at.",
+    "stop": "The stop loss: where the trade exits if the idea is proven wrong.",
+    "target": f"The profit target: {config.RR_TARGET:g}x the risk away from the entry.",
+    "exit_price": "Where the trade closed: the stop, the target, or the last price.",
+    "outcome": "win = hit the target. loss = hit the stop. open = data ran out first.",
+    "r_multiple": "Result in units of risk, after fees. +2R = twice the risk. -1R = lost the risk.",
+    "bars_held": "How many candles the trade stayed open. On 1h candles, 6 bars = about 6 hours.",
+    "hour_utc": "The hour the signal appeared, in UTC (London time without daylight saving).",
+    "trend": (
+        f"up = price was above its {config.TREND_SMA_PERIOD}-candle average when the "
+        "signal appeared. down = below."
+    ),
+    "session": "The main market open at the time: Asia, London, New York, or Off-hours.",
+}
 
 # Page setup
 
@@ -36,6 +59,12 @@ def load_candles(symbol: str, timeframe: str, start: str, end: str) -> pd.DataFr
 def ai_summary(inputs: dict) -> str:
     """AI only runs again when the numbers change"""
     return summarize(inputs)
+
+
+@st.cache_data(show_spinner=False)
+def ai_trade_explanation(inputs: dict) -> str:
+    """Cached: each trade is only explained once, even if you pick it again."""
+    return explain_trade(inputs)
 
 
 
@@ -166,6 +195,40 @@ fig.update_layout(
     legend={"orientation": "h", "y": 1.05},
 )
 st.plotly_chart(fig, width="stretch")
+st.caption(
+    "How to read this chart: each candle is one time period. Dots mark where trades "
+    "were entered: green = won, red = lost, gray = still open. Click a legend item to "
+    "hide it, and drag across the chart to zoom in."
+)
+
+
+# ---------------------------------------------------------------------------
+# 6b. Explain one trade in plain English
+# ---------------------------------------------------------------------------
+if not trades.empty:
+    st.subheader("Explain a trade")
+    # A readable label for each trade, e.g. "#3 · Mar 04 14:00 · long · win · +1.84R".
+    choice = st.selectbox(
+        "Pick a trade and the AI will walk you through it",
+        options=list(trades.index),
+        format_func=lambda i: (
+            f"#{i + 1} · {pd.Timestamp(trades.at[i, 'entry_time']):%b %d %H:%M} · "
+            f"{trades.at[i, 'direction']} · {trades.at[i, 'outcome']} · "
+            f"{trades.at[i, 'r_multiple']:+.2f}R"
+        ),
+    )
+    trade_inputs = build_trade_inputs(
+        trades.loc[choice], setup_label, symbol_label, timeframe_label
+    )
+    with st.spinner("The local AI is explaining this trade..."):
+        st.write(ai_trade_explanation(trade_inputs))
+    # The AI can mix up facts, so show the exact facts from code right underneath.
+    t = trade_inputs
+    st.caption(
+        f"AI-written explanation. Exact facts from the backtest: {t['direction']} · "
+        f"entry {t['entry']} · stop {t['stop_price']} · target {t['target']} · "
+        f"{t['outcome_meaning']} at {t['exit_price']} · {t['duration']} · {t['r_multiple']}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -191,4 +254,15 @@ with right:
 # 8. Every trade, for anyone who wants to check the details
 # ---------------------------------------------------------------------------
 with st.expander(f"All trades ({len(trades)})"):
-    st.dataframe(trades, hide_index=True, width="stretch")
+    st.caption("Hover over any column name to see what it means.")
+    st.dataframe(
+        trades,
+        hide_index=True,
+        width="stretch",
+        # Attach the plain-English help to each column that has it.
+        column_config={
+            name: st.column_config.Column(help=text)
+            for name, text in COLUMN_HELP.items()
+            if name in trades.columns
+        },
+    )
