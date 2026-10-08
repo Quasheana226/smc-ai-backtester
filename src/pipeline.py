@@ -26,9 +26,7 @@ SETUPS = {
 }
 
 
-def run_backtest(
-    candles: pd.DataFrame, setup_name: str
-) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+def run_backtest(candles: pd.DataFrame, setup_name: str) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Run one setup over `candles` and return (signals, trades, stats).
 
     `signals` is the candle table plus the detector's `signal`/`stop_price`

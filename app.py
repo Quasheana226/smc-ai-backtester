@@ -1,4 +1,4 @@
-""" app.py the streamlit screen this file only handles the 
+"""app.py the streamlit screen this file only handles the
 screen: inputs, buttons, charts, and text
 """
 
@@ -67,8 +67,7 @@ def ai_trade_explanation(inputs: dict) -> str:
     return explain_trade(inputs)
 
 
-
-#  Sidebar inputs 
+#  Sidebar inputs
 with st.sidebar:
     st.header("Settings")
     symbol = st.text_input("Trading pair", value="BTCUSDT").upper().strip()
@@ -85,7 +84,7 @@ with st.sidebar:
     )
     end = st.date_input("End date", value=date.today(), max_value=date.today(), format="MM/DD/YYYY")
     run_clicked = st.button("Run backtest", type="primary", width="stretch")
-    
+
 if start >= end:
     st.error("The start date must be before the end date.")
     st.stop()  # Stop drawing the rest of the page.
@@ -136,8 +135,7 @@ signals, trades, stats = results["signals"], results["trades"], results["stats"]
 setup_label, symbol_label, timeframe_label, start_label, end_label = results["label"]
 
 
-
-# Headline numbers 
+# Headline numbers
 
 st.subheader(f"{setup_label} on {symbol_label} · {timeframe_label} · {start_label} to {end_label}")
 
@@ -217,9 +215,7 @@ if not trades.empty:
             f"{trades.at[i, 'r_multiple']:+.2f}R"
         ),
     )
-    trade_inputs = build_trade_inputs(
-        trades.loc[choice], setup_label, symbol_label, timeframe_label
-    )
+    trade_inputs = build_trade_inputs(trades.loc[choice], setup_label, symbol_label, timeframe_label)
     with st.spinner("The local AI is explaining this trade..."):
         st.write(ai_trade_explanation(trade_inputs))
     # The AI can mix up facts, so show the exact facts from code right underneath.

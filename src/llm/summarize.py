@@ -1,4 +1,4 @@
-""" 
+"""
 summarize.py - turn backtest numbers into a plain-english summart with a local AI
 
 
@@ -14,9 +14,6 @@ Small language models are good writers but unreliable at math, and they can
 finished facts plus strict rules, and if the AI isn't available, the app falls
 back to a plain summary written by code. The app never breaks because of it.
 """
-
-
-
 
 import pandas as pd
 from langchain_core.prompts import ChatPromptTemplate
@@ -39,7 +36,6 @@ PROMPT = ChatPromptTemplate.from_messages(
             "Never decide this yourself from the win rate.\n"
             "5. Never promise or predict future profits. This is past data, not advice.\n"
             "6. Write one short paragraph of 4-6 sentences. No bullet points.",
-            
         ),
         (
             "human",
@@ -53,12 +49,10 @@ PROMPT = ChatPromptTemplate.from_messages(
             "- Total result: {total_r}\n"
             "- Worst drawdown: {max_drawdown_r}\n"
             "Breakdowns:\n{breakdowns}",
-
-            
         ),
     ]
-    
 )
+
 
 def build_prompt_inputs(
     stats: dict,
@@ -68,8 +62,7 @@ def build_prompt_inputs(
     timeframe: str,
     start: str,
     end: str,
-    
-)-> dict:
+) -> dict:
     """
     Turn the raw numbers into ready-to-read text for the prompt.
 
@@ -77,7 +70,7 @@ def build_prompt_inputs(
     (e.g. it receives "38.1%", not 0.381).
     """
     count = stats["trades"]
-    
+
     # The code decides whether to warn. The AI only told to repeat it.
     if stats["low_sample"]:
         sample_note = (
@@ -98,7 +91,7 @@ def build_prompt_inputs(
     else:
         verdict = "broke even (average 0R per trade after fees)."
 
-    return{
+    return {
         "setup_name": setup_name,
         "symbol": symbol,
         "timeframe": timeframe,
@@ -126,8 +119,7 @@ def summarize(inputs: dict, llm=None) -> str:
     # Nothing to explain, so don't spend time asking the AI.
     if inputs["trades"] == 0:
         return (
-            "No closed trades were found for this setup and date range, "
-            "so there is nothing to summarize yet."
+            "No closed trades were found for this setup and date range, so there is nothing to summarize yet."
         )
 
     if llm is None:
@@ -177,4 +169,3 @@ def _pct(value: float) -> str:
 def _r(value: float) -> str:
     """0.124 -> '+0.12R', -2.02 -> '-2.02R'"""
     return f"{value:+.2f}R"
-        
