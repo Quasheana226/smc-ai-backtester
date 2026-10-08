@@ -1,13 +1,13 @@
-"""simulate.py turn signals into simulated trades 
-Trades rules from claude.md 
+"""simulate.py turn signals into simulated trades
+Trades rules from claude.md
 1. signal appears on candle i -> enter at candle i+1's OPEN
 you cant buy at the close of a candle your still watching form
 2. stop = the detectors stop_price.
-Target = entry +/- RR_TARGET x risk (risk = distance to stop) 
-3 walk forward candle by candle untitl the stop or target is hit 
-4. walk forward candle by candle unitil the sae candle, assume the STOP hit first 
-candles dont tell us the orderm, so we pick the pessmistic answer 
-5. Only one trade open at a time 
+Target = entry +/- RR_TARGET x risk (risk = distance to stop)
+3 walk forward candle by candle untitl the stop or target is hit
+4. walk forward candle by candle unitil the sae candle, assume the STOP hit first
+candles dont tell us the orderm, so we pick the pessmistic answer
+5. Only one trade open at a time
 
 
 Results are measured in "R" (multiples of risk):
@@ -27,43 +27,41 @@ from src import config
 
 
 def simulate_trades(signals: pd.DataFrame, rr_target: float = config.RR_TARGET) -> pd.DataFrame:
-    """ 
-    Simulate trades from a Dataframe that has signal + stop_price colums 
-    Return one row per trade with entry/exit details and the results in R 
     """
-        
+    Simulate trades from a Dataframe that has signal + stop_price colums
+    Return one row per trade with entry/exit details and the results in R
+    """
+
     df = signals.reset_index(drop=True)
-    
-    #price vs moving average 
+
+    # price vs moving average
     sma = df["close"].rolling(config.TREND_SMA_PERIOD).mean()
-     
+
     trades: list[dict] = []
     i = 0
     last_index = len(df) - 1
-    
-    while i < last_index: # Need at least one candle after the signal to enter
+
+    while i < last_index:  # Need at least one candle after the signal to enter
         direction = df.at[i, "signal"]
         if direction == 0:
             i += 1
             continue
-        
-        
-        entry_index = i + 1 
+
+        entry_index = i + 1
         entry = df.at[entry_index, "open"]
         stop = df.at[i, "stop_price"]
-        
-        
+
         if pd.isna(stop):
             i += 1
             continue
-        
-        # Risk is always postive distance direction flips the math for shorts 
-        
+
+        # Risk is always postive distance direction flips the math for shorts
+
         risk = (entry - stop) * direction
         if risk <= 0:
             i += 1
             continue
-        
+
         target = entry + direction * rr_target * risk
         exit_index, exit_price, outcome = _walk_forward(df, entry_index, direction, stop, target)
         # Fees are paid in dollars; convert them into R so they reduce the result.
